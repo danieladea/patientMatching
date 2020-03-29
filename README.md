@@ -24,6 +24,7 @@ run python patientMatching.py
 the arguments are:
  "-w" to weigh missing columns less, allow profiles to be grouped even with a lot of missing information
 "--threshold = <int>" default value 87
+ "--csv = <str>" filename for csv to be tested against
 
 ### Contact:
 To get in touch with the Michael Scott Software Company, please leave an email for me at dadea@ucla.edu
