@@ -10,12 +10,17 @@ parser.add_argument("--threshold", action="store", type=int, default=86, help="t
     default is 86. Higher values mean profiles will be less likely to be grouped together")
 parser.add_argument("-w", action="store_true", dest="equalWeight",help="weigh columns equally \
     so that profiles with missing columns are more likely to be grouped", default=False,)
+parser.add_argument("--csv", action="store", type=str, default="Patient Matching Data.csv", help="filename,\
+     be grouped together")
+
 
 options = parser.parse_args()
 eqWeight = bool(options.equalWeight)
-print(eqWeight)
+
+filename = options.csv
+
 import pandas as pd
-patients = pd.read_csv("Patient Matching Data.csv")
+patients = pd.read_csv(filename)
 
 cleanPatients = patients.drop(["MI"], axis =1)
 cleanPatients.head()
@@ -315,7 +320,7 @@ def compare(a,b):
     return np.mean(scores)
 
 
-
+cleanPatients["confidence"] = -1
 cleanPatients["groupno"] = -1
 groups = []
 for index, row in cleanPatients.iterrows():
@@ -326,11 +331,13 @@ for index, row in cleanPatients.iterrows():
         #print(f'fuzz for {x[0]} and {row["names"]} = {temp},  index is {index}')
         if(temp > options.threshold):
             cleanPatients.loc[index,"groupno"] = group_index+1
+            cleanPatients.loc[index,"confidence"] = temp
             groups[group_index].append(index)
             break
     else:
         groups.append([index])
         cleanPatients.loc[index,"groupno"] = len(groups)
+        cleanPatients.loc[index,"confidence"] = options.threshold
 
 
 cleanPatients.to_csv('predictions.csv', index = False, header = True)
